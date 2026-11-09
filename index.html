@@ -342,7 +342,8 @@ async function initDb(){
   try{
     if(!window.claude||!window.claude.use){
       DL=BROWSER_DL;
-      if(!window.firebase||!window.HOGAR_FIREBASE||!window.HOGAR_FIREBASE.projectId){setSync('Solo en este dispositivo');return}
+      if(!window.firebase){setSync('Error: no cargó Firebase SDK');return}
+      if(!window.HOGAR_FIREBASE||!window.HOGAR_FIREBASE.projectId){setSync('Error: falta firebase-config.js');return}
       firebase.initializeApp(window.HOGAR_FIREBASE);
       const auth=firebase.auth();
       let user=await new Promise(res=>{const off=auth.onAuthStateChanged(u=>{off();res(u)})});
@@ -357,7 +358,7 @@ async function initDb(){
     DB=r[0];
     if(r[1]){try{const c=await r[1].can('data.write');if(c===false){READONLY=true;render()}}catch(e){}}
     KEYS.forEach(subscribe);S.tarjetas.forEach(c=>watchMov(c.id));setSync('Sincronizado');
-  }catch(e){setSync('Solo en este dispositivo')}
+  }catch(e){setSync('Error: '+((e&&(e.code||e.message))||e))}
 }
 function softRender(){
   const a=document.activeElement;
